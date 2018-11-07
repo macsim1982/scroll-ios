@@ -1,42 +1,16 @@
-import Context from './Context';
 import {
-    SEPARATOR
+    NAMESPACE,
+    SEPARATOR,
+    DEFAULT_OPTIONSnp
 } from "./constants";
 
-function throttled(delay, fn) {
-    let lastCall = 0;
-    return function (...args) {
-        const now = (new Date()).getTime();
-        if (now - lastCall < delay) {
-            return;
-        }
-        lastCall = now;
-        return fn(...args);
-    };
-}
-
-function debounced(delay, fn) {
-    let timerId;
-    return function (...args) {
-        if (timerId) {
-            clearTimeout(timerId);
-        }
-        timerId = setTimeout(() => {
-            fn(...args);
-            timerId = null;
-        }, delay);
-    };
-}
-
-
-const DEFAULT_OPTIONS = {
-    context: 'window'
-};
-
-const NAMESPACE = 'in-viewport';
+import {
+    debounced,
+    throttled
+} from '../base/helpers';
 
 let keyCounter = 0;
-export let allInstances = [];
+let allInstances = [];
 
 class InViewport {
     constructor(options) {
