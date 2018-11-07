@@ -1,0 +1,92 @@
+@keyframes to-top {
+  0% {
+    transform: translate(0, 0);
+  }
+
+  100% {
+    transform: translate(0, -100px);
+  }
+}
+
+@keyframes to-bottom {
+  0% {
+    transform: translate(0, 0);
+  }
+
+  100% {
+    transform: translate(0, 100px);
+  }
+}
+
+@keyframes to-left {
+  0% {
+    transform: translate(0, 0);
+  }
+
+  100% {
+    transform: translate(-100px, 0);
+  }
+}
+
+@keyframes to-right {
+  0% {
+    transform: translate(0, 0);
+  }
+
+  100% {
+    transform: translate(100px, 0);
+  }
+}
+
+
+.in-viewport {
+  opacity: 0;
+  transition: opacity 300ms;
+
+  &.in-viewport--part-visible {
+    opacity: 0.5;
+    transition: opacity 300ms;
+  }
+
+  &.in-viewport--all-in-viewport {
+    opacity: 1;
+    transition: opacity 300ms;
+  }
+}
+.in-viewport--enter-from-top {
+  animation: to-top 300ms ease-in reverse forwards;
+}
+.in-viewport--enter-from-right {
+  animation: to-right 300ms ease-in reverse forwards;
+}
+.in-viewport--enter-from-bottom {
+  animation: to-bottom 300ms ease-in reverse forwards;
+}
+.in-viewport--enter-from-left {
+  animation: to-left 300ms ease-in reverse forwards;
+}
+
+
+.in-viewport--leave-to-top {
+  animation: to-top 300ms ease-out forwards;
+}
+.in-viewport--leave-to-right {
+  animation: to-right 300ms ease-out forwards;
+}
+.in-viewport--leave-to-bottom {
+  animation: to-bottom 300ms ease-out forwards;
+}
+.in-viewport--leave-to-left {
+  animation: to-left 300ms ease-out forwards;
+}
+
+
+.in-viewport--context {
+  position: fixed;
+  border: 3px solid blue;
+  pointer-events: NONE;
+  left: 200px;
+  top: 100px;
+  right: 200px;
+  bottom: 100px;
+}

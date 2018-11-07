@@ -1,0 +1,24 @@
+html, body {
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+}
+
+article {
+  scroll-snap-type: y proximity;
+  /* Reserve space for header plus some extra space for sneak peeking. */
+  scroll-padding-top: 15vh;
+  overflow-y: scroll;
+}
+section {
+  /* Snap align start. */
+  scroll-snap-align: start;
+}
+header {
+  position: fixed;
+  height: 10vh;
+}
+
+@import 'in-viewport';
