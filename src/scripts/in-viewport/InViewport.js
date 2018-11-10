@@ -1,7 +1,10 @@
 import {
     NAMESPACE,
     SEPARATOR,
-    DEFAULT_OPTIONSnp
+    DEFAULT_OPTIONS,
+    // USE_CSS_ANIMATIONS,
+    CSS_LEAVE_DURATI0N,
+    CSS_ENTER_DURATI0N
 } from "./constants";
 
 import {
@@ -11,20 +14,23 @@ import {
 
 let keyCounter = 0;
 let allInstances = [];
+let hasEvents = false;
+let hasEventToggler = false;
+
 
 class InViewport {
     constructor(options) {
         this.key = NAMESPACE + SEPARATOR + keyCounter;
         this.options = Object.assign({}, DEFAULT_OPTIONS, options);
+        this.context = (this.options.context === 'window') ? document.documentElement : this.options.context;
 
         if (this.options.element && !allInstances[this.key]) {
-            this.context = Context.findOrCreateByElement(this.options.element);
-            this.context.add(this);
 
             allInstances[this.key] = this;
-            InViewport.allInstances = allInstances;
+            // InViewport.allInstances = allInstances;
 
             this.bindEvents();
+            this.refresh();
 
             keyCounter++;
         }
@@ -32,16 +38,45 @@ class InViewport {
 
 
     bindEvents() {
+        if (hasEvents) return;
+
         this.debouncedResize = debounced(200, this.onResize.bind(this));
         this.throttledScroll = throttled(10, this.onScroll.bind(this));
+        this.toggleEvents = this.toggleEvents.bind(this);
 
         window.addEventListener('resize', this.debouncedResize, false);
-        document.addEventListener('scroll', this.throttledScroll, false);
+        this.context.addEventListener('scroll', this.throttledScroll, false);
+
+        if (!hasEventToggler)
+            this.context.addEventListener('click', this.toggleEvents, false);
+
+        hasEvents = true;
+
+        console.log('bindEvents', hasEvents, this.context);
+        console.dir(this.context);
+
+        hasEventToggler = true;
     }
 
     unbindEvents() {
+        if (!hasEvents) return;
+
         window.removeEventListener('resize', this.debouncedResize, false);
-        document.removeEventListener('scroll', this.throttledScroll, false);
+        this.context.removeEventListener('scroll', this.throttledScroll, false);
+
+        hasEvents = false;
+
+        console.log('unbindEvents', hasEvents);
+    }
+
+    toggleEvents() {
+        if (hasEvents) {
+            this.unbindEvents();
+        } else {
+            this.bindEvents();
+        }
+
+        
     }
 
     onChangeViewportCB(key, previous, current, viewport) {
@@ -51,19 +86,19 @@ class InViewport {
         // console.log(this.key, key, previous, current);
 
 
-            // viewport[key][0] && console.log('leave to ' + key);
-            // viewport[key][1] && console.log('enter from ' + key);
+        // viewport[key][0] && console.log('leave to ' + key);
+        // viewport[key][1] && console.log('enter from ' + key);
 
         if (this.options.element && !this.isAnimating) {
             for (let k in viewport) {
                 if (viewport[k][1]) {
-                    console.log(this.key, key, k, previous, current);
-                    this.addClassAndRemoveOnAnimationEnd(NAMESPACE + '--enter-from-' + k, 300);
+                    // console.log(this.key, key, k, previous, current);
+                    this.addClassAndRemoveOnAnimationEnd(NAMESPACE + '--enter-from-' + k, CSS_ENTER_DURATI0N);
                 }
 
                 if (viewport[k][0]) {
-                    console.log(this.key, key, k, previous, current);
-                    this.addClassAndRemoveOnAnimationEnd(NAMESPACE + '--leave-to-' + k, 300);
+                    // console.log(this.key, key, k, previous, current);
+                    this.addClassAndRemoveOnAnimationEnd(NAMESPACE + '--leave-to-' + k, CSS_LEAVE_DURATI0N);
                 }
             }
         }
@@ -72,20 +107,22 @@ class InViewport {
     }
 
     addClassAndRemoveOnAnimationEnd(className, duration) {
+        let el = this.options.element;
         this.isAnimating = true;
 
-        this.options.element.classList.add(className);
 
-        const timeOut = setTimeout(() => {
-            this.options.element.classList.remove(className);
+        el.classList.add(className);
+
+        let timeOut = setTimeout(() => {
+            el.classList.remove(className);
             this.isAnimating = false;
 
             clearTimeout(timeOut);
         }, duration);
     }
 
-    onChange(type, cb) {
-        if (type && cb && typeof cb === 'function') {
+    onChange(tp, cb) {
+        if (tp && cb && typeof cb === 'function') {
             cb();
         }
     }
@@ -100,17 +137,16 @@ class InViewport {
 
     refresh() {
         // console.log('refresh', this.options, this.key);
-        const context = (this.options.context === 'window') ? document.documentElement : this.options.context;
+
+        const context = this.context;
         const element = this.options.element;
 
         let elRect = element.getBoundingClientRect();
         let ctxRect = context.getBoundingClientRect();
 
-        // console.table({ 'ctop': ctop, 'cbot': cbot, 'etop': etop, 'ebot': ebot} );
-
         let obj = {
-            [NAMESPACE + '--all-in-viewport']: Number(elRect.top >= ctxRect.top && elRect.bottom <= ctxRect.bottom && elRect.left >= ctxRect.left && elRect.right <= ctxRect.right),
-            [NAMESPACE + '--part-visible']: Number(elRect.top <= ctxRect.bottom && elRect.bottom >= ctxRect.top && elRect.left <= ctxRect.right && elRect.right >= ctxRect.left),
+            [NAMESPACE + '--all-in-viewport']: Number(elRect.top > ctxRect.top && elRect.bottom < ctxRect.bottom && elRect.left > ctxRect.left && elRect.right < ctxRect.right),
+            [NAMESPACE + '--part-visible']: Number(elRect.top < ctxRect.bottom && elRect.bottom > ctxRect.top && elRect.left < ctxRect.right && elRect.right > ctxRect.left),
         };
 
         // Refresh only if something has change
@@ -151,10 +187,12 @@ class InViewport {
     }
 
     static refreshAll() {
-        const instances = InViewport.allInstances;
+        const _instances = allInstances;
 
-        for (let key in instances) {
-            instances[key].refresh();
+        for (let key in _instances) {
+            if (key) {
+                _instances[key].refresh();
+            }
         }
     }
 }

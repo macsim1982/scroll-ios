@@ -1,4 +1,5 @@
 import '../styles/index.scss';
+import {prefix} from './base/tools.js';
 
 import InViewport from './in-viewport/InViewport';
 
@@ -9,13 +10,12 @@ import InViewport from './in-viewport/InViewport';
         module.hot.accept();
     }
 
-    let $items = document.querySelectorAll('.in-viewport');
+    let $items = [...document.querySelectorAll('.in-viewport')];
 
-    for (let $i in $items) {
-      if ($i < 16)
+    for (let i in $items) {
       new InViewport({
-        element: $items[$i],
-        context: document.querySelector('.in-viewport--context')
-      });
+        element: $items[i],
+        context: document.querySelector('.scroll-snap')
+      }).refreshAll();
     }
 }());
