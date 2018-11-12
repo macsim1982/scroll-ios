@@ -11,12 +11,13 @@ import {
     debounced,
     throttled
 } from '../base/helpers';
+import { callbackify } from "util";
 
 let keyCounter = 0;
 let allInstances = [];
 let hasEvents = false;
 let hasEventToggler = false;
-
+let timer = -1;
 
 class InViewport {
     constructor(options) {
@@ -31,7 +32,7 @@ class InViewport {
 
             this.bindEvents();
             this.refresh();
-
+            
             keyCounter++;
         }
     }
@@ -51,11 +52,10 @@ class InViewport {
             this.context.addEventListener('click', this.toggleEvents, false);
 
         hasEvents = true;
-
-        console.log('bindEvents', hasEvents, this.context);
-        console.dir(this.context);
-
         hasEventToggler = true;
+
+        // console.log('bindEvents', hasEvents, this.context);
+        // console.dir(this.context);
     }
 
     unbindEvents() {
@@ -66,7 +66,7 @@ class InViewport {
 
         hasEvents = false;
 
-        console.log('unbindEvents', hasEvents);
+        // console.log('unbindEvents', hasEvents);
     }
 
     toggleEvents() {
@@ -75,41 +75,41 @@ class InViewport {
         } else {
             this.bindEvents();
         }
-
-        
     }
 
-    onChangeViewportCB(key, previous, current, viewport) {
+    onChangeViewportCB(key, current, elRect, viewport) {
         // on change viewport callback...
-        this.options.element.classList[current === 1 ? 'add' : 'remove'](key);
-
-        // console.log(this.key, key, previous, current);
-
-
-        // viewport[key][0] && console.log('leave to ' + key);
-        // viewport[key][1] && console.log('enter from ' + key);
+        this.options.element.classList[current === 1 ? 'add' : 'remove'](NAMESPACE + '--' + key);
 
         if (this.options.element && !this.isAnimating) {
             for (let k in viewport) {
+
                 if (viewport[k][1]) {
-                    // console.log(this.key, key, k, previous, current);
                     this.addClassAndRemoveOnAnimationEnd(NAMESPACE + '--enter-from-' + k, CSS_ENTER_DURATI0N);
                 }
 
                 if (viewport[k][0]) {
-                    // console.log(this.key, key, k, previous, current);
                     this.addClassAndRemoveOnAnimationEnd(NAMESPACE + '--leave-to-' + k, CSS_LEAVE_DURATI0N);
                 }
             }
+
+            // console.log(this.options.element, this.gap(elRect, this.elRect));
         }
 
 
     }
 
+    addClassEnter(prefix, key, duration) {
+        this.addClassAndRemoveOnAnimationEnd(prefix + key, duration);
+    }
+
+    addClassLeave(prefix, key, duration) {
+        this.addClassAndRemoveOnAnimationEnd(prefix + key, duration);
+    }
+
     addClassAndRemoveOnAnimationEnd(className, duration) {
         let el = this.options.element;
         this.isAnimating = true;
-
 
         el.classList.add(className);
 
@@ -141,21 +141,24 @@ class InViewport {
         const context = this.context;
         const element = this.options.element;
 
-        let elRect = element.getBoundingClientRect();
-        let ctxRect = context.getBoundingClientRect();
+        let elRect = this.getRect(element);
+        let ctxRect = this.getRect(context);
 
         let obj = {
-            [NAMESPACE + '--all-in-viewport']: Number(elRect.top > ctxRect.top && elRect.bottom < ctxRect.bottom && elRect.left > ctxRect.left && elRect.right < ctxRect.right),
-            [NAMESPACE + '--part-visible']: Number(elRect.top < ctxRect.bottom && elRect.bottom > ctxRect.top && elRect.left < ctxRect.right && elRect.right > ctxRect.left),
+            all: this.allInViewport(elRect, ctxRect),
+            any: this.anyInViewport(elRect, ctxRect),
         };
+
+
+        // console.log(this.current, this.current2);
 
         // Refresh only if something has change
         for (let k in obj) {
             if (typeof this.obj === 'object') {
                 if (this.obj[k] !== obj[k]) {
                     const viewport = this.calculate(this.ctxRect, this.elRect, ctxRect, elRect);
-
-                    this.onChange(k, this.onChangeViewportCB.bind(this, k, this.obj[k], obj[k], viewport));
+                    
+                    this.onChange(k, this.onChangeViewportCB.bind(this, k, obj[k], elRect, viewport));
                 }
             }
         }
@@ -165,6 +168,50 @@ class InViewport {
         this.obj = Object.assign({}, obj);
 
         return obj;
+    }
+
+    allInViewport(a, b) {
+        return Number(a.top >= b.top && a.bottom <= b.bottom && a.left >= b.left && a.right <= b.right);
+    }
+
+    anyInViewport(a, b) {
+        return Number(a.top < b.bottom && a.bottom > b.top && a.left < b.right && a.right > b.left);
+    }
+
+    getRect(el) {
+        let rect = el.getBoundingClientRect();
+
+        return {
+            top: rect.top,
+            left: rect.left,
+            bottom: rect.bottom,
+            right: rect.right
+        };
+    }
+
+    delayed(callback, duration) {
+        if (timer < 0) {
+            timer = setTimeout(() => {
+                callback.apply(this);
+                clearTimeout(timer);
+                timer = -1;
+
+            }, duration);
+        }
+    }
+
+    gap(a, b) {
+        let c = {};
+        
+        for (let key in a) {
+            c[key] = a[key] - b[key];
+        }
+
+        return c;
+    }
+
+    compare(a, b) {
+        return (a !== b) ? true : false;
     }
 
     calculate(pc, pe, cc, ce) {

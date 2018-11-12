@@ -29,7 +29,6 @@ $items: 1;
 
 section {
   scroll-snap-align: start;
-  scroll-padding-top: 10vh;
   box-sizing: border-box;
   display: block;
   height: calc(100% / #{$items} - 0px);
@@ -173,7 +172,7 @@ section {
     margin: 2vh;
   }
 
-  &.in-viewport--part-visible {
+  &.in-viewport--any {
     visibility: visible;
     opacity: 1;
   }
@@ -249,56 +248,56 @@ section {
 
 .in-viewport--leave-to-top {
   .title {
-    animation: to-top 800ms 400ms ease-out forwards;
+    animation: to-top 0s ease-out forwards;
   }
 
   .description {
-    animation: to-top 800ms 200ms ease-out forwards;
+    animation: to-top 0s ease-out forwards;
   }
 
   .image {
-    animation: to-top 800ms ease-out forwards;
+    animation: to-top 0s ease-out forwards;
   }
 }
 
 .in-viewport--leave-to-right {
   .title {
-    animation: to-right 800ms 400ms ease-out forwards;
+    animation: to-right 0s ease-out forwards;
   }
 
   .description {
-    animation: to-right 800ms 200ms ease-out forwards;
+    animation: to-right 0s ease-out forwards;
   }
 
   .image {
-    animation: to-right 800ms ease-out forwards;
+    animation: to-right 0s ease-out forwards;
   }
 }
 
 .in-viewport--leave-to-bottom {
   .title {
-    animation: to-bottom 800ms 400ms ease-out forwards;
+    animation: to-bottom 0s ease-out forwards;
   }
 
   .description {
-    animation: to-bottom 800ms 200ms ease-out forwards;
+    animation: to-bottom 0s ease-out forwards;
   }
 
   .image {
-    animation: to-bottom 800ms ease-out forwards;
+    animation: to-bottom 0s ease-out forwards;
   }
 }
 
 .in-viewport--leave-to-left {
   .title {
-    animation: to-left 800ms 400ms ease-out forwards;
+    animation: to-left 0s ease-out forwards;
   }
 
   .description {
-    animation: to-left 800ms 200ms ease-out forwards;
+    animation: to-left 0s ease-out forwards;
   }
 
   .image {
-    animation: to-left 800ms ease-out forwards;
+    animation: to-left 0s ease-out forwards;
   }
 }
