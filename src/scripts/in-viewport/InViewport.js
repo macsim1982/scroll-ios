@@ -28,7 +28,6 @@ class InViewport {
         if (this.options.element && !allInstances[this.key]) {
 
             allInstances[this.key] = this;
-            // InViewport.allInstances = allInstances;
 
             this.bindEvents();
             this.refresh();
@@ -36,7 +35,6 @@ class InViewport {
             keyCounter++;
         }
     }
-
 
     bindEvents() {
         if (hasEvents) return;
@@ -53,9 +51,6 @@ class InViewport {
 
         hasEvents = true;
         hasEventToggler = true;
-
-        // console.log('bindEvents', hasEvents, this.context);
-        // console.dir(this.context);
     }
 
     unbindEvents() {
@@ -65,8 +60,6 @@ class InViewport {
         this.context.removeEventListener('scroll', this.throttledScroll, false);
 
         hasEvents = false;
-
-        // console.log('unbindEvents', hasEvents);
     }
 
     toggleEvents() {
@@ -92,19 +85,7 @@ class InViewport {
                     this.addClassAndRemoveOnAnimationEnd(NAMESPACE + '--leave-to-' + k, CSS_LEAVE_DURATI0N);
                 }
             }
-
-            // console.log(this.options.element, this.gap(elRect, this.elRect));
         }
-
-
-    }
-
-    addClassEnter(prefix, key, duration) {
-        this.addClassAndRemoveOnAnimationEnd(prefix + key, duration);
-    }
-
-    addClassLeave(prefix, key, duration) {
-        this.addClassAndRemoveOnAnimationEnd(prefix + key, duration);
     }
 
     addClassAndRemoveOnAnimationEnd(className, duration) {
@@ -149,19 +130,19 @@ class InViewport {
             any: this.anyInViewport(elRect, ctxRect),
         };
 
-
-        // console.log(this.current, this.current2);
-
         // Refresh only if something has change
         for (let k in obj) {
             if (typeof this.obj === 'object') {
+                
+
                 if (this.obj[k] !== obj[k]) {
-                    const viewport = this.calculate(this.ctxRect, this.elRect, ctxRect, elRect);
+                    const viewport = this.isInsideViewport(this.ctxRect, this.elRect, ctxRect, elRect);
                     
                     this.onChange(k, this.onChangeViewportCB.bind(this, k, obj[k], elRect, viewport));
                 }
             }
         }
+
 
         this.elRect = elRect;
         this.ctxRect = ctxRect;
@@ -171,14 +152,27 @@ class InViewport {
     }
 
     allInViewport(a, b) {
-        return Number(a.top >= b.top && a.bottom <= b.bottom && a.left >= b.left && a.right <= b.right);
+
+        return Number( 
+            a.top >= b.top &&
+            a.bottom <= b.bottom && 
+            a.left   >= b.left &&
+            a.right  <= b.right
+        );
     }
 
     anyInViewport(a, b) {
-        return Number(a.top < b.bottom && a.bottom > b.top && a.left < b.right && a.right > b.left);
+
+        return Number(
+            a.top < b.bottom && 
+            a.bottom > b.top && 
+            a.left < b.right && 
+            a.right > b.left
+        );
     }
 
     getRect(el) {
+
         let rect = el.getBoundingClientRect();
 
         return {
@@ -210,23 +204,18 @@ class InViewport {
         return c;
     }
 
-    compare(a, b) {
-        return (a !== b) ? true : false;
-    }
+    isInsideViewport(pc, pe, cc, ce) {
 
-    calculate(pc, pe, cc, ce) {
-        function calculate(a, b, c, d) {
-            return [a >= b && c < d, c >= d && a < b];
-        }
-
-        let top = calculate(cc.top, ce.bottom, pc.top, pe.bottom);
-        let left = calculate(cc.left, ce.right, pc.left, pe.right);
-        let right = calculate(pc.right, pe.left, cc.right, ce.left);
-        let bottom = calculate(pc.bottom, pe.top, cc.bottom, ce.top);
-
-        return {
-            top, right, bottom, left
+        const isInside = function(a, b, c, d) {
+            return [ a >= b && c < d, c >= d && a < b];
         };
+
+        let top = isInside(cc.top, ce.bottom, pc.top, pe.bottom);
+        let left = isInside(cc.left, ce.right, pc.left, pe.right);
+        let right = isInside(pc.right, pe.left, cc.right, ce.left);
+        let bottom = isInside(pc.bottom, pe.top, cc.bottom, ce.top);
+
+        return { top, right, bottom, left };
     }
 
     refreshAll() {
