@@ -138,8 +138,8 @@ class InViewport {
             _obj = {
                 top: rect.top + offsetTop,
                 left: rect.left + offsetLeft,
-                bottom: rect.bottom + offsetBottom,
-                right: rect.right + offsetRight
+                bottom: rect.bottom - offsetBottom,
+                right: rect.right - offsetRight
             };
         }
 
@@ -176,7 +176,7 @@ class InViewport {
 
     isInsideViewport(pc, pe, cc, ce) {
         const isInside = function(a, b, c, d) {
-            return [ a >= b && c < d, c >= d && a < b];
+            return [ a >= b && c < d, c > d && a <= b];
         };
 
         let top = isInside(cc.top, ce.bottom, pc.top, pe.bottom);
