@@ -15,7 +15,13 @@ import InViewport from './in-viewport/InViewport';
     for (let i in $items) {
       new InViewport({
         element: $items[i],
-        context: document.querySelector('.scroll-snap')
+        context: document.querySelector('.scroll-snap'),
+        enter() {
+          console.log(arguments);
+        },
+        leave() {
+          console.log(arguments);
+        }
       }).refreshAll();
     }
 }());

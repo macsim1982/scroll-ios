@@ -18,8 +18,8 @@ let allInstances = [];
 let hasEvents = false;
 let hasEventToggler = false;
 
-let offsetTop = 0;
-let offsetBottom = 0;
+let offsetTop = 100;
+let offsetBottom = 100;
 let offsetLeft = 0;
 let offsetRight = 0;
 
@@ -85,10 +85,16 @@ class InViewport {
 
                 if (viewport[k][1]) {
                     this.addClassAndRemoveOnAnimationEnd(NAMESPACE + '--enter-from-' + k, CSS_ENTER_DURATI0N);
+                    
+                    if (this.options.enter && typeof this.options.enter === 'function')
+                        this.options.enter(this, current, 'enter-from-' + k);
                 }
 
                 if (viewport[k][0]) {
                     this.addClassAndRemoveOnAnimationEnd(NAMESPACE + '--leave-to-' + k, CSS_LEAVE_DURATI0N);
+
+                    if (this.options.leave && typeof this.options.leave === 'function')
+                        this.options.leave(this, current, 'leave-to-' + k);
                 }
             }
         }
