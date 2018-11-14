@@ -5,5 +5,5 @@ export const DEFAULT_OPTIONS = {
 };
 export const USE_CSS_ANIMATIONS = true;
 
-export const CSS_ENTER_DURATI0N = 1000;
-export const CSS_LEAVE_DURATI0N = 0;
+export const CSS_ENTER_DURATI0N = 600;
+export const CSS_LEAVE_DURATI0N = 250;

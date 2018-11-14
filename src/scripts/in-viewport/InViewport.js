@@ -11,7 +11,7 @@ import {
     debounced,
     throttled
 } from '../base/helpers';
-import { callbackify } from "util";
+
 
 let keyCounter = 0;
 let allInstances = [];
@@ -19,7 +19,7 @@ let hasEvents = false;
 let hasEventToggler = false;
 
 let offsetTop = 0;
-let offsetBottom = 30;
+let offsetBottom = 0;
 let offsetLeft = 0;
 let offsetRight = 0;
 
@@ -77,7 +77,7 @@ class InViewport {
     }
 
     // EVENTS
-    onChangeViewportCallback(key, current, elRect, viewport) {
+    onChange(key, current, viewport) {
         this.options.element.classList[current === 1 ? 'add' : 'remove'](NAMESPACE + '--' + key);
 
         if (this.options.element && !this.isAnimating) {
@@ -91,12 +91,6 @@ class InViewport {
                     this.addClassAndRemoveOnAnimationEnd(NAMESPACE + '--leave-to-' + k, CSS_LEAVE_DURATI0N);
                 }
             }
-        }
-    }
-
-    onChange(tp, cb) {
-        if (tp && cb && typeof cb === 'function') {
-            cb();
         }
     }
 
@@ -124,7 +118,7 @@ class InViewport {
         }, duration);
     }
 
-    getRect(el, offset) {
+    getRect(el, useOffset) {
         let rect = el.getBoundingClientRect();
 
         let _obj = {
@@ -134,7 +128,7 @@ class InViewport {
             right: rect.right
         };
 
-        if (offset) {
+        if (useOffset) {
             _obj = {
                 top: rect.top + offsetTop,
                 left: rect.left + offsetLeft,
@@ -146,17 +140,7 @@ class InViewport {
         return _obj;
     }
 
-    getDelta(a, b) {
-        let c = {};
-        
-        for (let key in a) {
-            c[key] = a[key] - b[key];
-        }
-
-        return c;
-    }
-
-    allInViewport(a, b) {
+    insideViewport(a, b) {
         return Number(
             a.top >= b.top &&
             a.bottom <= b.bottom &&
@@ -165,7 +149,7 @@ class InViewport {
         );
     }
 
-    anyInViewport(a, b) {
+    acrossViewport(a, b) {
         return Number(
             a.top < b.bottom &&
             a.bottom > b.top &&
@@ -197,8 +181,8 @@ class InViewport {
         let ctxRect = this.getRect(context, true);
 
         let obj = {
-            all: this.allInViewport(elRect, ctxRect),
-            any: this.anyInViewport(elRect, ctxRect),
+            all: this.insideViewport(elRect, ctxRect),
+            any: this.acrossViewport(elRect, ctxRect),
         };
 
         // Refresh only if something has change
@@ -209,7 +193,7 @@ class InViewport {
                 if (this.obj[k] !== obj[k]) {
                     const viewport = this.isInsideViewport(this.ctxRect, this.elRect, ctxRect, elRect);
 
-                    this.onChange(k, this.onChangeViewportCallback.bind(this, k, obj[k], elRect, viewport));
+                    this.onChange(k, obj[k], viewport);
                 }
             }
         }

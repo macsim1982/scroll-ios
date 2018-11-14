@@ -1,4 +1,4 @@
-export function throttled(delay, fn) {
+export const throttled = (delay, fn) => {
     let lastCall = 0;
     return function (...args) {
         const now = (new Date()).getTime();
@@ -8,9 +8,9 @@ export function throttled(delay, fn) {
         lastCall = now;
         return fn(...args);
     };
-}
+};
 
-export function debounced(delay, fn) {
+export const debounced = (delay, fn) =>{
     let timerId;
     return function (...args) {
         if (timerId) {
@@ -21,4 +21,4 @@ export function debounced(delay, fn) {
             timerId = null;
         }, delay);
     };
-}
+};

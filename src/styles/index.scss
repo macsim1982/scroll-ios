@@ -64,17 +64,17 @@ section {
 }
 
 @media screen and (min-height: 801px) {
-  $items: 6;
+  $items: 5;
 
   section {
-    // height: calc(100% / #{$items} - 0px);
-    height: 40vh;
+    height: calc(100% / #{$items} - 0px);
+    // height: 40vh;
   }
 }
 
-::-webkit-scrollbar {
-  display: none;
-}
+// ::-webkit-scrollbar {
+//   display: none;
+// }
 
 
 
@@ -88,7 +88,7 @@ section {
   }
 
   100% {
-    transform: translate(0, -30vh);
+    transform: translate(0, -50px);
     visibility: visible;
     opacity: 0;
   }
@@ -102,7 +102,7 @@ section {
   }
 
   100% {
-    transform: translate(0, 30vh);
+    transform: translate(0, 50px);
     visibility: visible;
     opacity: 0;
   }
@@ -116,7 +116,7 @@ section {
   }
 
   100% {
-    transform: translate(-30vw, 0);
+    transform: translate(-50px, 0);
     visibility: visible;
     opacity: 0;
   }
@@ -131,7 +131,7 @@ section {
   }
 
   100% {
-    transform: translate(30vw, 0);
+    transform: translate(50px, 0);
     visibility: visible;
     opacity: 0;
   }
@@ -140,11 +140,11 @@ section {
 
 .in-viewport {
   overflow: hidden;
-  // visibility: hidden;
+  visibility: hidden;
 
   opacity: 0;
-  // transition: opacity 20ms ease-in;
-  // will-change: opacity;
+  transition: opacity 250ms ease-in;
+  will-change: opacity;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -153,7 +153,7 @@ section {
   .title,
   .description,
   .image {
-    // will-change: transform, opacity;
+    will-change: transform, opacity;
   }
 
   .title {
@@ -171,12 +171,9 @@ section {
     height: 30vw;
     margin: 2vh;
   }
-
-  &.in-viewport--any {
-    visibility: visible;
-    opacity: 1;
-  }
-
+  
+  &.in-viewport--any,
+  &.in-viewport--all,
   &.in-viewport--enter-from-top,
   &.in-viewport--enter-from-right,
   &.in-viewport--enter-from-bottom,
@@ -186,7 +183,10 @@ section {
   &.in-viewport--enter-from-bottom,
   &.in-viewport--enter-from-left {
     opacity: 1;
+    visibility: visible;
   }
+
+  
 }
 
 .in-viewport--enter-from-top {
@@ -248,56 +248,56 @@ section {
 
 .in-viewport--leave-to-top {
   .title {
-    animation: to-top 0s ease-out forwards;
+    animation: to-top 250ms ease-out forwards;
   }
 
   .description {
-    animation: to-top 0s ease-out forwards;
+    animation: to-top 250ms ease-out forwards;
   }
 
   .image {
-    animation: to-top 0s ease-out forwards;
+    animation: to-top 250ms ease-out forwards;
   }
 }
 
 .in-viewport--leave-to-right {
   .title {
-    animation: to-right 0s ease-out forwards;
+    animation: to-right 250ms ease-out forwards;
   }
 
   .description {
-    animation: to-right 0s ease-out forwards;
+    animation: to-right 250ms ease-out forwards;
   }
 
   .image {
-    animation: to-right 0s ease-out forwards;
+    animation: to-right 250ms ease-out forwards;
   }
 }
 
 .in-viewport--leave-to-bottom {
   .title {
-    animation: to-bottom 0s ease-out forwards;
+    animation: to-bottom 250ms ease-out forwards;
   }
 
   .description {
-    animation: to-bottom 0s ease-out forwards;
+    animation: to-bottom 250ms ease-out forwards;
   }
 
   .image {
-    animation: to-bottom 0s ease-out forwards;
+    animation: to-bottom 250ms ease-out forwards;
   }
 }
 
 .in-viewport--leave-to-left {
   .title {
-    animation: to-left 0s ease-out forwards;
+    animation: to-left 250ms ease-out forwards;
   }
 
   .description {
-    animation: to-left 0s ease-out forwards;
+    animation: to-left 250ms ease-out forwards;
   }
 
   .image {
-    animation: to-left 0s ease-out forwards;
+    animation: to-left 250ms ease-out forwards;
   }
 }
