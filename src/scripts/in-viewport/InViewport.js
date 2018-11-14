@@ -17,13 +17,19 @@ let keyCounter = 0;
 let allInstances = [];
 let hasEvents = false;
 let hasEventToggler = false;
+
+let offsetTop = 0;
+let offsetBottom = 30;
+let offsetLeft = 0;
+let offsetRight = 0;
+
 let timer = -1;
 
 class InViewport {
     constructor(options) {
         this.key = NAMESPACE + SEPARATOR + keyCounter;
         this.options = Object.assign({}, DEFAULT_OPTIONS, options);
-        this.context = (this.options.context === 'window') ? document.documentElement : this.options.context;
+        this.context = (this.options.context === 'window') ? document.body : this.options.context;
 
         if (this.options.element && !allInstances[this.key]) {
 
@@ -70,8 +76,8 @@ class InViewport {
         }
     }
 
-    onChangeViewportCB(key, current, elRect, viewport) {
-        // on change viewport callback...
+    // EVENTS
+    onChangeViewportCallback(key, current, elRect, viewport) {
         this.options.element.classList[current === 1 ? 'add' : 'remove'](NAMESPACE + '--' + key);
 
         if (this.options.element && !this.isAnimating) {
@@ -88,6 +94,22 @@ class InViewport {
         }
     }
 
+    onChange(tp, cb) {
+        if (tp && cb && typeof cb === 'function') {
+            cb();
+        }
+    }
+
+    onResize() {
+        this.refreshAll();
+    }
+
+    onScroll() {
+        window.requestAnimationFrame(this.refreshAll);
+        // this.refreshAll();
+    }
+
+    // Methods
     addClassAndRemoveOnAnimationEnd(className, duration) {
         let el = this.options.element;
         this.isAnimating = true;
@@ -102,99 +124,29 @@ class InViewport {
         }, duration);
     }
 
-    onChange(tp, cb) {
-        if (tp && cb && typeof cb === 'function') {
-            cb();
-        }
-    }
-
-    onResize() {
-        this.refreshAll();
-    }
-
-    onScroll() {
-        this.refreshAll();
-    }
-
-    refresh() {
-        // console.log('refresh', this.options, this.key);
-
-        const context = this.context;
-        const element = this.options.element;
-
-        let elRect = this.getRect(element);
-        let ctxRect = this.getRect(context);
-
-        let obj = {
-            all: this.allInViewport(elRect, ctxRect),
-            any: this.anyInViewport(elRect, ctxRect),
-        };
-
-        // Refresh only if something has change
-        for (let k in obj) {
-            if (typeof this.obj === 'object') {
-                
-
-                if (this.obj[k] !== obj[k]) {
-                    const viewport = this.isInsideViewport(this.ctxRect, this.elRect, ctxRect, elRect);
-                    
-                    this.onChange(k, this.onChangeViewportCB.bind(this, k, obj[k], elRect, viewport));
-                }
-            }
-        }
-
-
-        this.elRect = elRect;
-        this.ctxRect = ctxRect;
-        this.obj = Object.assign({}, obj);
-
-        return obj;
-    }
-
-    allInViewport(a, b) {
-
-        return Number( 
-            a.top >= b.top &&
-            a.bottom <= b.bottom && 
-            a.left   >= b.left &&
-            a.right  <= b.right
-        );
-    }
-
-    anyInViewport(a, b) {
-
-        return Number(
-            a.top < b.bottom && 
-            a.bottom > b.top && 
-            a.left < b.right && 
-            a.right > b.left
-        );
-    }
-
-    getRect(el) {
-
+    getRect(el, offset) {
         let rect = el.getBoundingClientRect();
 
-        return {
+        let _obj = {
             top: rect.top,
             left: rect.left,
             bottom: rect.bottom,
             right: rect.right
         };
-    }
 
-    delayed(callback, duration) {
-        if (timer < 0) {
-            timer = setTimeout(() => {
-                callback.apply(this);
-                clearTimeout(timer);
-                timer = -1;
-
-            }, duration);
+        if (offset) {
+            _obj = {
+                top: rect.top + offsetTop,
+                left: rect.left + offsetLeft,
+                bottom: rect.bottom + offsetBottom,
+                right: rect.right + offsetRight
+            };
         }
+
+        return _obj;
     }
 
-    gap(a, b) {
+    getDelta(a, b) {
         let c = {};
         
         for (let key in a) {
@@ -204,8 +156,25 @@ class InViewport {
         return c;
     }
 
-    isInsideViewport(pc, pe, cc, ce) {
+    allInViewport(a, b) {
+        return Number(
+            a.top >= b.top &&
+            a.bottom <= b.bottom &&
+            a.left >= b.left &&
+            a.right <= b.right
+        );
+    }
 
+    anyInViewport(a, b) {
+        return Number(
+            a.top < b.bottom &&
+            a.bottom > b.top &&
+            a.left < b.right &&
+            a.right > b.left
+        );
+    }
+
+    isInsideViewport(pc, pe, cc, ce) {
         const isInside = function(a, b, c, d) {
             return [ a >= b && c < d, c >= d && a < b];
         };
@@ -216,6 +185,40 @@ class InViewport {
         let bottom = isInside(pc.bottom, pe.top, cc.bottom, ce.top);
 
         return { top, right, bottom, left };
+    }
+
+    refresh() {
+        // console.log('refresh', this.options, this.key);
+
+        const context = this.context;
+        const element = this.options.element;
+
+        let elRect = this.getRect(element);
+        let ctxRect = this.getRect(context, true);
+
+        let obj = {
+            all: this.allInViewport(elRect, ctxRect),
+            any: this.anyInViewport(elRect, ctxRect),
+        };
+
+        // Refresh only if something has change
+        for (let k in obj) {
+            if (typeof this.obj === 'object') {
+
+
+                if (this.obj[k] !== obj[k]) {
+                    const viewport = this.isInsideViewport(this.ctxRect, this.elRect, ctxRect, elRect);
+
+                    this.onChange(k, this.onChangeViewportCallback.bind(this, k, obj[k], elRect, viewport));
+                }
+            }
+        }
+
+        this.elRect = elRect;
+        this.ctxRect = ctxRect;
+        this.obj = Object.assign({}, obj);
+
+        return obj;
     }
 
     refreshAll() {
