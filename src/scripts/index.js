@@ -16,11 +16,11 @@ import InViewport from './in-viewport/InViewport';
       new InViewport({
         element: $items[i],
         context: document.querySelector('.scroll-snap'),
-        enter() {
-          console.log(arguments);
+        enter(viewport, event) {
+          console.log(event, viewport);
         },
-        leave() {
-          console.log(arguments);
+        leave(viewport, event) {
+            console.log(event, viewport);
         }
       }).refreshAll();
     }
