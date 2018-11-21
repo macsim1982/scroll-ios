@@ -10,6 +10,28 @@ article {
   width: 100%;
   height: 100%; }
 
+.slider-wrapper {
+  position: relative;
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory; }
+
+.slider {
+  display: flex;
+  flex-direction: row;
+  flex: 0 0 100%;
+  padding: 0;
+  margin: 0; }
+  .slider li {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 0 0 100%;
+    scroll-snap-align: start; }
+
 .scroll-snap {
   position: fixed;
   margin: 0;
@@ -21,11 +43,11 @@ article {
   scroll-snap-type: y mandatory; }
 
 section {
-  scroll-snap-align: start;
   box-sizing: border-box;
   display: block;
   height: calc(100% / 1 - 0px);
-  padding: 20px; }
+  padding: 20px;
+  height: auto !important; }
   section:nth-child(3n+1) {
     background: #FFF; }
   section:nth-child(3n+2) {
@@ -43,10 +65,51 @@ section {
 
 @media screen and (min-height: 801px) {
   section {
-    height: calc(100% / 1 - 0px); } }
+    height: calc(100% / 5 - 0px); } }
 
-::-webkit-scrollbar {
-  display: none; }
+/* Prevents img without src to appear */
+img:not([src]) {
+  visibility: hidden; }
+
+/* Solve microsoft edge problem */
+img[data-src],
+img[data-srcset] {
+  display: block;
+  min-height: 1px; }
+
+.js-lazyload-wrapper {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 0;
+  overflow: hidden;
+  padding-bottom: 100%; }
+  .js-lazyload-wrapper > .js-lazyload {
+    display: block;
+    position: absolute;
+    width: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0; }
+  .js-lazyload-wrapper:after {
+    content: "";
+    display: flex;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    flex: 0 0 100%;
+    justify-content: center;
+    align-items: center;
+    background: white;
+    transition: opacity 350ms ease-in; }
+  .js-lazyload-wrapper.is-loading:after {
+    opacity: 1; }
+  .js-lazyload-wrapper.is-loaded:after {
+    opacity: 0;
+    transition: opacity 350ms ease-in; }
 
 @keyframes to-top {
   0% {
@@ -54,7 +117,7 @@ section {
     visibility: visible;
     opacity: 1; }
   100% {
-    transform: translate(0, -30vh);
+    transform: translate(0, -50px);
     visibility: visible;
     opacity: 0; } }
 
@@ -64,7 +127,7 @@ section {
     visibility: visible;
     opacity: 1; }
   100% {
-    transform: translate(0, 30vh);
+    transform: translate(0, 50px);
     visibility: visible;
     opacity: 0; } }
 
@@ -74,7 +137,7 @@ section {
     visibility: visible;
     opacity: 1; }
   100% {
-    transform: translate(-30vw, 0);
+    transform: translate(-50px, 0);
     visibility: visible;
     opacity: 0; } }
 
@@ -84,37 +147,32 @@ section {
     visibility: visible;
     opacity: 1; }
   100% {
-    transform: translate(30vw, 0);
+    transform: translate(50px, 0);
     visibility: visible;
     opacity: 0; } }
 
 .in-viewport {
   overflow: hidden;
+  visibility: hidden;
   opacity: 0;
-  transition: opacity 300ms ease-in, box-shadow 300ms ease-in;
+  transition: opacity 250ms ease-in;
+  will-change: opacity;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  box-shadow: inset 0 0 7px 3px rgba(0, 14, 33, 0); }
+  justify-content: center; }
+  .in-viewport .title,
+  .in-viewport .description,
+  .in-viewport .image {
+    will-change: transform, opacity; }
   .in-viewport .title {
     font-size: 4vh; }
   .in-viewport .description {
-    font-size: 2vh; }
-  .in-viewport .image {
-    background: #BFBFBF;
-    border: 10px solid #EEE;
-    width: 80vw;
-    height: 30vw;
-    margin: 2vh; }
-  .in-viewport.in-viewport--any {
-    visibility: visible;
-    opacity: 1; }
-  .in-viewport.in-viewport--all {
-    visibility: visible;
-    box-shadow: inset 0 0 10px 0 rgba(0, 24, 43, 0.4); }
-  .in-viewport.in-viewport--enter-from-top, .in-viewport.in-viewport--enter-from-right, .in-viewport.in-viewport--enter-from-bottom, .in-viewport.in-viewport--enter-from-left, .in-viewport.in-viewport--enter-from-top, .in-viewport.in-viewport--enter-from-right, .in-viewport.in-viewport--enter-from-bottom, .in-viewport.in-viewport--enter-from-left {
-    opacity: 1; }
+    font-size: 2vh;
+    margin-bottom: 40px; }
+  .in-viewport.in-viewport--any, .in-viewport.in-viewport--all, .in-viewport.in-viewport--enter-from-top, .in-viewport.in-viewport--enter-from-right, .in-viewport.in-viewport--enter-from-bottom, .in-viewport.in-viewport--enter-from-left, .in-viewport.in-viewport--enter-from-top, .in-viewport.in-viewport--enter-from-right, .in-viewport.in-viewport--enter-from-bottom, .in-viewport.in-viewport--enter-from-left {
+    opacity: 1;
+    visibility: visible; }
 
 .in-viewport--enter-from-top .title {
   animation: to-top 400ms 300ms ease-in reverse both; }
@@ -153,39 +211,39 @@ section {
   animation: to-left 400ms 300ms ease-in reverse both; }
 
 .in-viewport--leave-to-top .title {
-  animation: to-top 0s ease-out forwards; }
+  animation: to-top 250ms ease-out forwards; }
 
 .in-viewport--leave-to-top .description {
-  animation: to-top 0s ease-out forwards; }
+  animation: to-top 250ms ease-out forwards; }
 
 .in-viewport--leave-to-top .image {
-  animation: to-top 0s ease-out forwards; }
+  animation: to-top 250ms ease-out forwards; }
 
 .in-viewport--leave-to-right .title {
-  animation: to-right 0s ease-out forwards; }
+  animation: to-right 250ms ease-out forwards; }
 
 .in-viewport--leave-to-right .description {
-  animation: to-right 0s ease-out forwards; }
+  animation: to-right 250ms ease-out forwards; }
 
 .in-viewport--leave-to-right .image {
-  animation: to-right 0s ease-out forwards; }
+  animation: to-right 250ms ease-out forwards; }
 
 .in-viewport--leave-to-bottom .title {
-  animation: to-bottom 0s ease-out forwards; }
+  animation: to-bottom 250ms ease-out forwards; }
 
 .in-viewport--leave-to-bottom .description {
-  animation: to-bottom 0s ease-out forwards; }
+  animation: to-bottom 250ms ease-out forwards; }
 
 .in-viewport--leave-to-bottom .image {
-  animation: to-bottom 0s ease-out forwards; }
+  animation: to-bottom 250ms ease-out forwards; }
 
 .in-viewport--leave-to-left .title {
-  animation: to-left 0s ease-out forwards; }
+  animation: to-left 250ms ease-out forwards; }
 
 .in-viewport--leave-to-left .description {
-  animation: to-left 0s ease-out forwards; }
+  animation: to-left 250ms ease-out forwards; }
 
 .in-viewport--leave-to-left .image {
-  animation: to-left 0s ease-out forwards; }
+  animation: to-left 250ms ease-out forwards; }
 
 /*# sourceMappingURL=bundle.css.map*/
