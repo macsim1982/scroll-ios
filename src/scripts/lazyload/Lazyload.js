@@ -47,7 +47,7 @@ class Lazyload {
       if (entry.isIntersecting && !entry.target.src) {
         setSources(entry.target);
 
-        console.log(entry, index, entry.intersectionRatio);
+        // console.log(entry, index, entry.intersectionRatio);
 
         entry.target.parentNode.classList.add('is-loading');
 

@@ -23,7 +23,7 @@ const setSourcesImg = (element) => {
   const srcsetDataValue = getData(element, srcsetDataName);
   const srcDataValue = getData(element, 'src');
 
-  console.log('setSourcesImg');
+  // console.log('setSourcesImg');
 
   if (parent && parent.tagName === "PICTURE") {
     setPictureSources(parent, "srcset", srcsetDataName);
