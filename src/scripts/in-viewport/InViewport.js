@@ -131,7 +131,9 @@ class InViewport {
             top: rect.top,
             left: rect.left,
             bottom: rect.bottom,
-            right: rect.right
+            right: rect.right,
+            width: rect.width,
+            height: rect.height
         };
 
         if (useOffset) {
@@ -139,7 +141,9 @@ class InViewport {
                 top: rect.top + offsetTop,
                 left: rect.left + offsetLeft,
                 bottom: rect.bottom - offsetBottom,
-                right: rect.right - offsetRight
+                right: rect.right - offsetRight,
+                width: _obj.width,
+                height: _obj.height,
             };
         }
 
@@ -164,19 +168,6 @@ class InViewport {
         );
     }
 
-    isInsideViewport(pc, pe, cc, ce) {
-        const isInside = function(a, b, c, d) {
-            return [ a >= b && c < d, c > d && a <= b];
-        };
-
-        let top = isInside(cc.top, ce.bottom, pc.top, pe.bottom);
-        let left = isInside(cc.left, ce.right, pc.left, pe.right);
-        let right = isInside(pc.right, pe.left, cc.right, ce.left);
-        let bottom = isInside(pc.bottom, pe.top, cc.bottom, ce.top);
-
-        return { top, right, bottom, left };
-    }
-
     refresh() {
         // console.log('refresh', this.options, this.key);
 
@@ -191,17 +182,25 @@ class InViewport {
             any: this.acrossViewport(elRect, ctxRect),
         };
 
-        // Refresh only if something has change
-        for (let k in obj) {
-            if (typeof this.obj === 'object') {
+        if (typeof this.obj === 'object' && this.obj.any !== obj.any) {
+            const enter_from_top = this.ctxRect.top > this.elRect.top + this.elRect.height;
+            const enter_from_left = this.ctxRect.left > this.elRect.left + this.elRect.width;
+            const enter_from_bottom = this.elRect.top > this.ctxRect.top + this.ctxRect.height;
+            const enter_from_right = this.elRect.left > this.ctxRect.left + this.ctxRect.width;
 
+            // const leave_to_top = this.ctxRect.top < this.elRect.top + this.elRect.height;
+            // const leave_to_left = this.ctxRect.left < this.elRect.left + this.elRect.width;
+            // const leave_to_bottom = this.elRect.top < this.ctxRect.top + this.ctxRect.height;
+            // const leave_to_right = this.elRect.left < this.ctxRect.left + this.ctxRect.width;
 
-                if (this.obj[k] !== obj[k]) {
-                    const viewport = this.isInsideViewport(this.ctxRect, this.elRect, ctxRect, elRect);
+            let viewport = {
+                top: [0, enter_from_top],
+                left: [0, enter_from_left],
+                bottom: [0, enter_from_bottom],
+                right: [0, enter_from_right],
+            };
 
-                    this.onChange(k, obj[k], viewport);
-                }
-            }
+            this.onChange('any', obj.any, viewport);
         }
 
         this.elRect = elRect;
