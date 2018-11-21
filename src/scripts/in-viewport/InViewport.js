@@ -1,17 +1,14 @@
 import {
-    NAMESPACE,
-    SEPARATOR,
-    DEFAULT_OPTIONS,
-    // USE_CSS_ANIMATIONS,
+    CSS_ENTER_DURATI0N,
     CSS_LEAVE_DURATI0N,
-    CSS_ENTER_DURATI0N
+    DEFAULT_OPTIONS,
+    NAMESPACE,
+    SEPARATOR
 } from "./constants";
-
 import {
     debounced,
     throttled
 } from '../base/helpers';
-
 
 let keyCounter = 0;
 let allInstances = [];
@@ -37,7 +34,7 @@ class InViewport {
 
             this.bindEvents();
             this.refresh();
-            
+
             keyCounter++;
         }
     }
@@ -52,8 +49,8 @@ class InViewport {
         window.addEventListener('resize', this.debouncedResize, false);
         this.context.addEventListener('scroll', this.throttledScroll, false);
 
-        if (!hasEventToggler)
-            this.context.addEventListener('click', this.toggleEvents, false);
+        // if (!hasEventToggler)
+        //     this.context.addEventListener('click', this.toggleEvents, false);
 
         hasEvents = true;
         hasEventToggler = true;
@@ -82,31 +79,18 @@ class InViewport {
 
         if (this.options.element && !this.isAnimating) {
             for (let k in viewport) {
-
-                if (viewport[k][1]) {
-                    this.addClassAndRemoveOnAnimationEnd(NAMESPACE + '--enter-from-' + k, CSS_ENTER_DURATI0N);
-                    
-                    if (this.options.enter && typeof this.options.enter === 'function')
-                        this.options.enter('enter-from-' + k, this);
-                }
-
-                if (viewport[k][0]) {
-                    this.addClassAndRemoveOnAnimationEnd(NAMESPACE + '--leave-to-' + k, CSS_LEAVE_DURATI0N);
-
-                    if (this.options.leave && typeof this.options.leave === 'function')
-                        this.options.leave('leave-to-' + k, this);
-                }
+                this.entering(viewport, k);
+                this.leaving(viewport, k);
             }
         }
     }
 
     onResize() {
-        this.refreshAll();
+        window.requestAnimationFrame(this.refreshAll);
     }
 
     onScroll() {
         window.requestAnimationFrame(this.refreshAll);
-        // this.refreshAll();
     }
 
     // Methods
@@ -116,6 +100,7 @@ class InViewport {
 
         el.classList.add(className);
 
+        // TODO: can be done in a better way !!
         let timeOut = setTimeout(() => {
             el.classList.remove(className);
             this.isAnimating = false;
@@ -168,9 +153,56 @@ class InViewport {
         );
     }
 
-    refresh() {
-        // console.log('refresh', this.options, this.key);
+    getViewport(obj) {
+        const cl = this.ctxRect.left;
+        const cw = this.ctxRect.width;
+        const ct = this.ctxRect.top;
+        const ch = this.ctxRect.height;
+        const el = this.elRect.left;
+        const ew = this.elRect.width;
+        const et = this.elRect.top;
+        const eh = this.elRect.height;
 
+        const enter_from_top    = ct > et + eh && obj.any === 1;
+        const enter_from_left   = cl > el + ew && obj.any === 1;
+        const enter_from_bottom = et > ct + ch && obj.any === 1;
+        const enter_from_right  = el > cl + cw && obj.any === 1;
+
+        const leave_to_top      = ct <= et + eh && obj.any === 0;
+        const leave_to_left     = cl <= el + ew && obj.any === 0;
+        const leave_to_bottom   = et <= ct + ch && obj.any === 0;
+        const leave_to_right    = el <= cl + cw && obj.any === 0;
+
+        return {
+            top: [leave_to_top, enter_from_top],
+            left: [leave_to_left, enter_from_left],
+            bottom: [leave_to_bottom, enter_from_bottom],
+            right: [leave_to_right, enter_from_right],
+        };
+    }
+
+    enterinOrLeaving(viewport, k, dir) {
+        const name = ['enter-from', 'leave-to'];
+        const func = ['enter', 'leave'];
+        const reverse_dir = dir === 1 ? 0 : 1;
+
+        if (viewport[k][reverse_dir]) {
+            this.addClassAndRemoveOnAnimationEnd(NAMESPACE + '--' + name[dir] + '-' + k, CSS_ENTER_DURATI0N);
+
+            if (this.options[func[dir]] && typeof this.options[func[dir]] === 'function')
+                this.options[func[dir]](name[dir] + '-' + k, this);
+        }
+    }
+
+    entering(viewport, k) {
+        this.enterinOrLeaving(viewport, k, 1);
+    }
+
+    leaving(viewport, k) {
+        this.enterinOrLeaving(viewport, k, 0);
+    }
+
+    refresh() {
         const context = this.context;
         const element = this.options.element;
 
@@ -183,24 +215,15 @@ class InViewport {
         };
 
         if (typeof this.obj === 'object' && this.obj.any !== obj.any) {
-            const enter_from_top = this.ctxRect.top > this.elRect.top + this.elRect.height;
-            const enter_from_left = this.ctxRect.left > this.elRect.left + this.elRect.width;
-            const enter_from_bottom = this.elRect.top > this.ctxRect.top + this.ctxRect.height;
-            const enter_from_right = this.elRect.left > this.ctxRect.left + this.ctxRect.width;
 
-            // const leave_to_top = this.ctxRect.top < this.elRect.top + this.elRect.height;
-            // const leave_to_left = this.ctxRect.left < this.elRect.left + this.elRect.width;
-            // const leave_to_bottom = this.elRect.top < this.ctxRect.top + this.ctxRect.height;
-            // const leave_to_right = this.elRect.left < this.ctxRect.left + this.ctxRect.width;
-
-            let viewport = {
-                top: [0, enter_from_top],
-                left: [0, enter_from_left],
-                bottom: [0, enter_from_bottom],
-                right: [0, enter_from_right],
-            };
+            const viewport = this.getViewport(obj);
 
             this.onChange('any', obj.any, viewport);
+
+        } else if (obj.any === 1) {
+
+            this.options.element.classList.add(NAMESPACE + '--any');
+
         }
 
         this.elRect = elRect;

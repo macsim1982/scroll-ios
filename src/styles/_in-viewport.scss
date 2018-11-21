@@ -1,0 +1,158 @@
+@import 'animations';
+
+
+.in-viewport {
+  overflow: hidden;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 250ms ease-in;
+  will-change: opacity;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  .title,
+  .description,
+  .image {
+    will-change: transform, opacity;
+  }
+
+  .title {
+    font-size: 4vh;
+  }
+
+  .description {
+    font-size: 2vh;
+    margin-bottom: 40px;
+  }
+
+  &.in-viewport--any,
+  &.in-viewport--all,
+  &.in-viewport--enter-from-top,
+  &.in-viewport--enter-from-right,
+  &.in-viewport--enter-from-bottom,
+  &.in-viewport--enter-from-left,
+  &.in-viewport--enter-from-top,
+  &.in-viewport--enter-from-right,
+  &.in-viewport--enter-from-bottom,
+  &.in-viewport--enter-from-left {
+    opacity: 1;
+    visibility: visible;
+  }
+
+
+}
+
+.in-viewport--enter-from-top {
+  .title {
+    animation: to-top 400ms 300ms ease-in reverse both;
+  }
+
+  .description {
+    animation: to-top 400ms 250ms ease-in reverse both;
+  }
+
+  .image {
+    animation: to-top 400ms 200ms ease-in reverse both;
+  }
+}
+
+.in-viewport--enter-from-right {
+  .title {
+    animation: to-right 400ms 200ms ease-in reverse both;
+  }
+
+  .description {
+    animation: to-right 400ms 250ms ease-in reverse both;
+  }
+
+  .image {
+    animation: to-right 400ms 300ms ease-in reverse both;
+  }
+}
+
+.in-viewport--enter-from-bottom {
+  .title {
+    animation: to-bottom 400ms 200ms ease-in reverse both;
+  }
+
+  .description {
+    animation: to-bottom 400ms 250ms ease-in reverse both;
+  }
+
+  .image {
+    animation: to-bottom 400ms 300ms ease-in reverse both;
+  }
+}
+
+.in-viewport--enter-from-left {
+  .title {
+    animation: to-left 400ms 200ms ease-in reverse both;
+  }
+
+  .description {
+    animation: to-left 400ms 250ms ease-in reverse both;
+  }
+
+  .image {
+    animation: to-left 400ms 300ms ease-in reverse both;
+  }
+}
+
+
+.in-viewport--leave-to-top {
+  .title {
+    animation: to-top 250ms ease-out forwards;
+  }
+
+  .description {
+    animation: to-top 250ms ease-out forwards;
+  }
+
+  .image {
+    animation: to-top 250ms ease-out forwards;
+  }
+}
+
+.in-viewport--leave-to-right {
+  .title {
+    animation: to-right 250ms ease-out forwards;
+  }
+
+  .description {
+    animation: to-right 250ms ease-out forwards;
+  }
+
+  .image {
+    animation: to-right 250ms ease-out forwards;
+  }
+}
+
+.in-viewport--leave-to-bottom {
+  .title {
+    animation: to-bottom 250ms ease-out forwards;
+  }
+
+  .description {
+    animation: to-bottom 250ms ease-out forwards;
+  }
+
+  .image {
+    animation: to-bottom 250ms ease-out forwards;
+  }
+}
+
+.in-viewport--leave-to-left {
+  .title {
+    animation: to-left 250ms ease-out forwards;
+  }
+
+  .description {
+    animation: to-left 250ms ease-out forwards;
+  }
+
+  .image {
+    animation: to-left 250ms ease-out forwards;
+  }
+}

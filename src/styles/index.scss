@@ -6,13 +6,39 @@ html, body {
   overflow: hidden;
 }
 
-
-
 article {
   position: relative;
   width: 100%;
   height: 100%;
 }
+
+.slider-wrapper {
+  position: relative;
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+}
+
+.slider {
+  display: flex;
+  flex-direction: row;
+  flex: 0 0 100%;
+  padding: 0;
+  margin: 0;
+
+  li {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+  }
+}
+
+
 
 .scroll-snap {
   position: fixed;
@@ -28,11 +54,13 @@ article {
 $items: 1;
 
 section {
-  scroll-snap-align: start;
+  // scroll-snap-align: start;
   box-sizing: border-box;
   display: block;
   height: calc(100% / #{$items} - 0px);
   padding: 20px;
+
+  height: auto !important;
 
   &:nth-child(3n+1) {
     background: #FFF;
@@ -77,227 +105,5 @@ section {
 // }
 
 
-
+@import 'lazyload';
 @import 'in-viewport';
-
-@keyframes to-top {
-  0% {
-    transform: translate(0, 0);
-    visibility: visible;
-    opacity: 1;
-  }
-
-  100% {
-    transform: translate(0, -50px);
-    visibility: visible;
-    opacity: 0;
-  }
-}
-
-@keyframes to-bottom {
-  0% {
-    transform: translate(0, 0);
-    visibility: visible;
-    opacity: 1;
-  }
-
-  100% {
-    transform: translate(0, 50px);
-    visibility: visible;
-    opacity: 0;
-  }
-}
-
-@keyframes to-left {
-  0% {
-    transform: translate(0, 0);
-    visibility: visible;
-    opacity: 1;
-  }
-
-  100% {
-    transform: translate(-50px, 0);
-    visibility: visible;
-    opacity: 0;
-  }
-}
-
-@keyframes to-right {
-  0% {
-    transform: translate(0, 0);
-    visibility: visible;
-
-    opacity: 1;
-  }
-
-  100% {
-    transform: translate(50px, 0);
-    visibility: visible;
-    opacity: 0;
-  }
-}
-
-
-.in-viewport {
-  overflow: hidden;
-  visibility: hidden;
-
-  opacity: 0;
-  transition: opacity 250ms ease-in;
-  will-change: opacity;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  .title,
-  .description,
-  .image {
-    will-change: transform, opacity;
-  }
-
-  .title {
-    font-size: 4vh;
-  }
-
-  .description {
-    font-size: 2vh;
-  }
-
-  .image {
-    background: #BFBFBF;
-    border: 10px solid #EEE;
-    width: 80vw;
-    height: 30vw;
-    margin: 2vh;
-  }
-  
-  &.in-viewport--any,
-  &.in-viewport--all,
-  &.in-viewport--enter-from-top,
-  &.in-viewport--enter-from-right,
-  &.in-viewport--enter-from-bottom,
-  &.in-viewport--enter-from-left,
-  &.in-viewport--enter-from-top,
-  &.in-viewport--enter-from-right,
-  &.in-viewport--enter-from-bottom,
-  &.in-viewport--enter-from-left {
-    opacity: 1;
-    visibility: visible;
-  }
-
-  
-}
-
-.in-viewport--enter-from-top {
-  .title {
-    animation: to-top 400ms 300ms ease-in reverse both;
-  }
-
-  .description {
-    animation: to-top 400ms 250ms ease-in reverse both;
-  }
-
-  .image {
-    animation: to-top 400ms 200ms ease-in reverse both;
-  }
-}
-
-.in-viewport--enter-from-right {
-  .title {
-    animation: to-right 400ms 200ms ease-in reverse both;
-  }
-
-  .description {
-    animation: to-right 400ms 250ms ease-in reverse both;
-  }
-
-  .image {
-    animation: to-right 400ms 300ms ease-in reverse both;
-  }
-}
-
-.in-viewport--enter-from-bottom {
-  .title {
-    animation: to-bottom 400ms 200ms ease-in reverse both;
-  }
-
-  .description {
-    animation: to-bottom 400ms 250ms ease-in reverse both;
-  }
-
-  .image {
-    animation: to-bottom 400ms 300ms ease-in reverse both;
-  }
-}
-
-.in-viewport--enter-from-left {
-  .title {
-    animation: to-left 400ms 200ms ease-in reverse both;
-  }
-
-  .description {
-    animation: to-left 400ms 250ms ease-in reverse both;
-  }
-
-  .image {
-    animation: to-left 400ms 300ms ease-in reverse both;
-  }
-}
-
-
-.in-viewport--leave-to-top {
-  .title {
-    animation: to-top 250ms ease-out forwards;
-  }
-
-  .description {
-    animation: to-top 250ms ease-out forwards;
-  }
-
-  .image {
-    animation: to-top 250ms ease-out forwards;
-  }
-}
-
-.in-viewport--leave-to-right {
-  .title {
-    animation: to-right 250ms ease-out forwards;
-  }
-
-  .description {
-    animation: to-right 250ms ease-out forwards;
-  }
-
-  .image {
-    animation: to-right 250ms ease-out forwards;
-  }
-}
-
-.in-viewport--leave-to-bottom {
-  .title {
-    animation: to-bottom 250ms ease-out forwards;
-  }
-
-  .description {
-    animation: to-bottom 250ms ease-out forwards;
-  }
-
-  .image {
-    animation: to-bottom 250ms ease-out forwards;
-  }
-}
-
-.in-viewport--leave-to-left {
-  .title {
-    animation: to-left 250ms ease-out forwards;
-  }
-
-  .description {
-    animation: to-left 250ms ease-out forwards;
-  }
-
-  .image {
-    animation: to-left 250ms ease-out forwards;
-  }
-}

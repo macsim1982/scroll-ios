@@ -1,14 +1,14 @@
 {
-  "name": "yet-another-webpack-es6-starterkit",
-  "version": "1.0.0",
-  "description": "A light foundation for your next frontend project based on webpack.",
+  "name": "mcs-in-viewport",
+  "version": "0.0.0",
+  "description": "check if items are in viewport and apply callback events for entering from and leaving to four directions.",
   "scripts": {
     "build": "webpack --config webpack-prod.config.js --colors",
     "dev": "webpack-dev-server --open --config webpack-dev.config.js --watch --colors"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/wbkd/yet-another-webpack-es6-starterkit.git"
+    "url": "git+https://github.com/macsim1982/scroll-ios.git"
   },
   "keywords": [
     "webpack",
@@ -21,7 +21,7 @@
   "author": "webkid.io",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/wbkd/yet-another-webpack-es6-starterkit/issues"
+    "url": "https://github.com/macsim1982/scroll-ios/issues"
   },
   "eslintConfig": {
     "env": {
@@ -36,7 +36,7 @@
       "semi": 2
     }
   },
-  "homepage": "https://github.com/wbkd/yet-another-webpack-es6-starterkit#readme",
+  "homepage": "https://github.com/macsim1982/scroll-ios#readme",
   "devDependencies": {
     "acorn": "^6.0.4",
     "atob": ">=2.1.2",

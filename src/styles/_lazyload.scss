@@ -1,0 +1,58 @@
+/* Prevents img without src to appear */
+img:not([src]) {
+    visibility: hidden;
+}
+
+/* Solve microsoft edge problem */
+img[data-src],
+img[data-srcset] {
+  display: block;
+  min-height: 1px;
+}
+
+@mixin aspect-ratio($width, $height, $childClass) {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 0;
+  overflow: hidden;
+  padding-bottom: ($height / $width) * 100%;
+
+  & > .#{$childClass} {
+    display: block;
+    position: absolute;
+    width: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+}
+
+.js-lazyload-wrapper {
+  @include aspect-ratio(1, 1, js-lazyload);
+
+  &:after {
+    content: "";
+    display: flex;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    flex: 0 0 100%;
+    justify-content: center;
+    align-items: center;
+    background: white;
+    transition: opacity 350ms ease-in;
+  }
+
+  &.is-loading:after {
+    opacity: 1;
+  }
+
+  &.is-loaded:after {
+    opacity: 0;
+    transition: opacity 350ms ease-in;
+  }
+}
